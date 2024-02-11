@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { Suspense } from "react";
 import { ShoppingCart, User, X } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
 
-import LoginModal from "@/app/components/LoginModal";
-import SignUpModal from "@/app/components/SignUpModal";
 import { Button } from "@/app/components/ui/Button";
+import NavbarModals from "@/app/components/NavbarModals";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -16,7 +15,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@/app/components/ui/DropdownMenu";
-import { useMounted } from "../hooks/useMounted";
 
 const cartItems = [
   {
@@ -29,34 +27,6 @@ const cartItems = [
 ];
 
 function Navbar() {
-  const { replace } = useRouter();
-  const searchParams = useSearchParams();
-
-  const isMounted = useMounted();
-
-  const params = new URLSearchParams(searchParams);
-
-  const isLoginOpen = !!params.get("login");
-  const isSignUpOpen = !!params.get("sign-up");
-
-  function toggleLoginModal() {
-    replace("/");
-  }
-
-  function toggleSignUpModal() {
-    replace("/");
-  }
-
-  function toggleModals() {
-    if (isLoginOpen) {
-      params.delete("login");
-      params.set("sign-up", "true");
-    } else {
-      params.delete("sign-up");
-      params.set("login", "true");
-    }
-  }
-
   return (
     <div>
       <div className="bg-primary h-8 flex justify-center items-center">
@@ -160,20 +130,9 @@ function Navbar() {
         </div>
       </nav>
 
-      {isMounted && (
-        <>
-          <LoginModal
-            isOpen={isLoginOpen}
-            toggleLoginModal={toggleLoginModal}
-            toggleModals={toggleModals}
-          />
-          <SignUpModal
-            isOpen={isSignUpOpen}
-            toggleSignUpModal={toggleSignUpModal}
-            toggleModals={toggleModals}
-          />
-        </>
-      )}
+      <Suspense fallback={<p>Loading...</p>}>
+        <NavbarModals />
+      </Suspense>
     </div>
   );
 }

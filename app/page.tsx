@@ -1,7 +1,3 @@
-export default function Home() {
-  return (
-    <main>
-      Hello world
-    </main>
-  );
-}
+import HomePage from "@/app/containers/HomePage/HomePage";
+
+export default HomePage;

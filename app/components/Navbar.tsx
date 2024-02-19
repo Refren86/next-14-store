@@ -5,7 +5,6 @@ import Image from "next/image";
 import { Suspense } from "react";
 import { ShoppingCart, User, X } from "lucide-react";
 
-import { Button } from "@/app/components/ui/Button";
 import NavbarModals from "@/app/components/NavbarModals";
 import {
   DropdownMenu,
@@ -15,6 +14,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@/app/components/ui/DropdownMenu";
+import { Button } from "@/app/components/ui/Button";
+import { Logo } from "@/app/components/icons/Logo";
 
 const cartItems = [
   {
@@ -29,8 +30,8 @@ const cartItems = [
 function Navbar() {
   return (
     <div>
-      <div className="bg-primary h-8 flex justify-center items-center">
-        <p>
+      <div className="bg-primary flex justify-center items-center">
+        <p className="font-semibold text-lg text-white py-2 selection:bg-black">
           Зареєструйтесь та отримайте <b>знижку 20%</b> на перше замовлення.{" "}
           <Link href="?sign-up=true" className="underline">
             <b>Зареєструватись</b>
@@ -40,13 +41,8 @@ function Navbar() {
       <nav className="bg-secondary h-16">
         <div className="flex justify-between items-center max-w-[1600px] mx-auto px-4 h-full">
           {/* Left */}
-          <Link href="/">
-            <Image
-              src="/icons/logo-white.svg"
-              alt="logo"
-              width={200}
-              height={60}
-            />
+          <Link href="/" className="text-black">
+            <Logo fill="black" className="w-[200px] h-8" />
           </Link>
 
           {/* Right */}

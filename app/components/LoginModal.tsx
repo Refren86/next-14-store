@@ -1,15 +1,9 @@
 "use client";
 
 import Link from "next/link";
-
-import { Button } from "@/app/components/ui/Button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/app/components/ui/Dialog";
 import { Input } from "@/app/components/ui/Input";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/app/components/ui/Dialog";
+import { Button } from "@/app/components/ui/Button";
 
 type LoginModalProps = {
   isOpen: boolean;

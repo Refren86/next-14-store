@@ -29,10 +29,10 @@ const Banner = () => {
               <Image
                 src="/images/slider/slider-placeholder.webp"
                 alt="slide"
-                fill
                 loading="lazy"
                 className="rounded-xl"
-              />
+                fill
+                />
             </div>
           </SwiperSlide>
         ))}

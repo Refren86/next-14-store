@@ -5,8 +5,8 @@ import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 
 import "@/app/globals.css";
-import 'swiper/scss';
-import 'swiper/scss/pagination';
+import "swiper/scss";
+import "swiper/scss/pagination";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +24,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Navbar />
-        <main className="h-[calc(100dvh-544px)]">{children}</main>
+        <main>{children}</main>
         <Footer />
       </body>
     </html>

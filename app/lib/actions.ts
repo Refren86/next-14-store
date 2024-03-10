@@ -3,10 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { createClient } from "./server";
+import { createSupabaseAppClient } from "./supabase/server";
 
 export async function login(formData: FormData) {
-  const supabase = createClient();
+  const supabase = createSupabaseAppClient();
 
   // type-casting here for convenience
   // in practice, I should validate my inputs with zod
@@ -14,19 +14,19 @@ export async function login(formData: FormData) {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
   };
-
+  
   const { error } = await supabase.auth.signInWithPassword(data);
 
   if (error) {
     redirect("/error");
   }
 
-  revalidatePath("/", "layout");
-  redirect("/");
+  // revalidatePath("/", "layout");
+  redirect("/admin");
 }
 
 export async function signup(formData: FormData) {
-  const supabase = createClient();
+  const supabase = createSupabaseAppClient();
 
   // type-casting here for convenience
   // in practice, I should validate my inputs with zod

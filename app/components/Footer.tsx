@@ -47,7 +47,7 @@ function Footer() {
 
   return (
     <div>
-      <div className="bg-secondary py-4 mt-12">
+      <div className="bg-secondary py-4">
         <Wrapper>
           <div className="flex flex-col md:flex-row md:items-center gap-y-5 justify-center">
             <h4 className="text-lg md:text-xl font-semibold">
@@ -130,8 +130,8 @@ function Footer() {
 
                   <div className="space-y-2">
                     <p className="font-semibold">Графік роботи:</p>
-                    <p>Пн-Пт: 10:00 - 21:00</p>
-                    <p>Суб-Нед: 10:00 - 20:00</p>
+                    <p>Пн - Пт: 10:00 - 21:00</p>
+                    <p>Суб - Нед: 10:00 - 20:00</p>
                   </div>
                 </div>
               </div>

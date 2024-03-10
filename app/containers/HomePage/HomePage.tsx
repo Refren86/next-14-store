@@ -1,15 +1,16 @@
+import Wrapper from "@/app/components/Wrapper";
 import Banner from "./Banner";
 
 const HomePage = () => {
   return (
-    <div className="max-w-[1600px] mx-auto px-4 pt-12">
+    <Wrapper>
       <Banner />
 
       {/* <Categories /> */}
       {/* <Recommended /> */}
       {/* <Discounts /> */}
       {/* <NewProducts /> */}
-    </div>
+    </Wrapper>
   );
 };
 

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
-import { handleLogin } from "../lib/forms";
+import { login } from "@/app/lib/actions";
 
 type Props = {
   toggleModals: () => void;
@@ -10,7 +10,7 @@ type Props = {
 
 const LoginForm = ({ toggleModals }: Props) => {
   return (
-    <form action={handleLogin} className="space-y-4 mt-4">
+    <form action={login} className="space-y-4 mt-4">
       <Input name="email" type="email" placeholder="Е-мейл..." />
 
       <Input name="password" type="password" placeholder="Пароль..." />

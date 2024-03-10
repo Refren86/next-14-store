@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
+const privateRoutes = ["/admin"];
+
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({
     request: {
@@ -54,7 +56,11 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  await supabase.auth.getUser(); // Refreshing the Auth token
+  const { data } = await supabase.auth.getUser(); // Refreshing the Auth token
+
+  if (!data.user && privateRoutes.includes(request.nextUrl.pathname)) {
+    return NextResponse.redirect(new URL("/?login=true", request.url));
+  }
 
   return response;
 }

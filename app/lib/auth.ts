@@ -1,8 +1,10 @@
 import { JWTPayload, SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 const key = new TextEncoder().encode(process.env.NEXT_PUBLIC_TOKEN_SECRET);
+
+const privateRoutes = ["/admin"];
 
 // Create JWT with specified payload
 export function encrypt(payload: JWTPayload) {
@@ -24,10 +26,16 @@ export async function login(formData: FormData) {
 
   // Create the session
   const expires = new Date(Date.now() + 5 * 60 * 1000);
-  const session = await encrypt({ user, expires });
 
-  // Save the session in a cookie
-  cookies().set("session", session, { expires, httpOnly: true });
+  try {
+    const session = await encrypt({ user, expires });
+
+    // Save the session in a cookie
+    cookies().set("session", session, { expires, httpOnly: true });
+  } catch (error) {
+    console.log({ error });
+    
+  }
 }
 
 export async function logout() {
@@ -43,17 +51,26 @@ export async function getSession() {
 
 export async function updateSession(request: NextRequest) {
   const session = cookies().get("session")?.value;
+
+  console.log({ session });
+
+  if (!session && privateRoutes.includes(request.nextUrl.pathname)) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
   if (!session) return;
 
   // Refresh the session so it doesn't expire
   const parsed = await decrypt(session);
   parsed.expires = new Date(Date.now() + 5 * 60 * 1000) as Date;
   const res = NextResponse.next();
+
   res.cookies.set({
     name: "session",
     value: await encrypt(parsed),
     httpOnly: true,
     expires: parsed.expires as Date,
   });
+
   return res;
 }

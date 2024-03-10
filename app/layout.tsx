@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
+import { Toaster } from "./components/ui/Toaster";
 
 import "@/app/globals.css";
 import "swiper/scss";
@@ -24,7 +25,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Navbar />
-        <main>{children}</main>
+        <main className="py-12">{children}</main>
+        <Toaster />
         <Footer />
       </body>
     </html>

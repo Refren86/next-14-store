@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { useState } from "react";
 
 import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/Dialog";
-import { signup } from "../lib/supabase/auth";
+import { signup } from "@/app/lib/actions";
+import { toast } from "../hooks/useToast";
 
 type SignUpModalProps = {
   isOpen: boolean;
@@ -24,7 +24,16 @@ function SignUpModal({
           <DialogTitle className="text-2xl font-bold">Реєстрація</DialogTitle>
         </DialogHeader>
 
-        <form action={signup} className="space-y-4 mt-4">
+        <form
+          action={async (formData: FormData) => {
+            await signup(formData);
+            toast({
+              title:
+                "Е-мейл з підтвердженям аккаунту був успішно відправений на вказану пошту 💌",
+            });
+          }}
+          className="space-y-4 mt-4"
+        >
           <Input name="name" type="text" placeholder="Ім'я..." />
           <Input name="surname" type="text" placeholder="Прізвище..." />
           <Input name="email" type="email" placeholder="Е-мейл..." />

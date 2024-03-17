@@ -21,8 +21,8 @@ export async function login(formData: FormData) {
     redirect("/error");
   }
 
-  // revalidatePath("/", "layout");
-  redirect("/admin");
+  revalidatePath("/", "layout");
+  redirect("/"); // show modal after or smth
 }
 
 export async function signup(formData: FormData) {

@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 const key = new TextEncoder().encode(process.env.NEXT_PUBLIC_TOKEN_SECRET);
 
-const privateRoutes = ["/admin"];
+const privateRoutes = ["/dashboard"];
 
 // Create JWT with specified payload
 export function encrypt(payload: JWTPayload) {

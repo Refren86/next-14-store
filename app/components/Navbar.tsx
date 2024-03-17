@@ -3,8 +3,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Suspense } from "react";
+import { useRouter } from "next/navigation";
 import { ShoppingCart, User, X } from "lucide-react";
 
+import Wrapper from "./Wrapper";
 import NavbarModals from "@/app/components/NavbarModals";
 import {
   DropdownMenu,
@@ -16,7 +18,8 @@ import {
 } from "@/app/components/ui/DropdownMenu";
 import { Button } from "@/app/components/ui/Button";
 import { Logo } from "@/app/components/icons/Logo";
-import Wrapper from "./Wrapper";
+import { createClient } from "../lib/supabase/client";
+import { useUserStore } from "../hooks/store/useUserStore";
 
 const cartItems = [
   {
@@ -29,6 +32,19 @@ const cartItems = [
 ];
 
 function Navbar() {
+  const router = useRouter();
+  const userData = useUserStore((state: any) => state);
+
+  async function logout() {
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.refresh();
+    } catch (error) {
+      console.log({ error });
+    }
+  }
+
   return (
     <div>
       <div className="bg-primary flex justify-center items-center">
@@ -103,29 +119,29 @@ function Navbar() {
                 </DropdownMenu>
               </div>
 
-              <div className="group flex justify-center items-center min-w-[48px] h-12 hover:bg-primary/70 rounded-full cursor-pointer transition-background duration-300">
-                {/* {user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="w-full h-full font-semibold">
-                    {user.name.charAt(0)}. {user.surname.charAt(0)}.
-                  </DropdownMenuTrigger>
+              <div className="group flex justify-center items-center min-w-[48px] h-12 hover:bg-primary/70 hover:text-white rounded-full cursor-pointer transition-background duration-300">
+                {userData.user ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="w-full h-full font-semibold">
+                      {userData.user.user_metadata.first_name.charAt(0)}.{" "}
+                      {userData.user.user_metadata.last_name.charAt(0)}.
+                    </DropdownMenuTrigger>
 
-                  <DropdownMenuContent>
-                    <DropdownMenuLabel>{t("navbar.account")}</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>{t("navbar.settings")}</DropdownMenuItem>
-                    <DropdownMenuItem>
-                      {t("navbar.shoppingHistory")}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>{t("navbar.logOut")}</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                // Add here code from below when user will be implemented
-              )} */}
-                <Link href="?login=true">
-                  <User size={28} className="group-hover:invert" />
-                </Link>
+                    <DropdownMenuContent>
+                      <DropdownMenuLabel>Мій профіль</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>Налаштування</DropdownMenuItem>
+                      <DropdownMenuItem>Мої покупки</DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <button onClick={logout}>Вийти</button>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Link href="?login=true">
+                    <User size={28} className="group-hover:invert" />
+                  </Link>
+                )}
               </div>
             </div>
           </div>

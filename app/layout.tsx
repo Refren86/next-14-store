@@ -29,16 +29,15 @@ export default async function RootLayout({
 
   const { data } = await supabase.auth.getSession();
 
-  if (data.session?.access_token) {
-    const jwtDecoded = jwtDecode(data.session.access_token);
-    useUserStore.setState({ user: jwtDecoded });
-  }
+  // if (data.session?.access_token) {
+  //   const jwtDecoded = jwtDecode(data.session.access_token);
+  //   useUserStore.setState({ user: jwtDecoded });
+  // }
 
   return (
     <html lang="en">
       <body className={inter.className}>
-        <StoreInitializer accessToken={data.session?.access_token} />
-        <Navbar />
+        <Navbar session={data.session} />
         <main className="py-12">{children}</main>
         <Toaster />
         <Footer />
@@ -46,3 +45,4 @@ export default async function RootLayout({
     </html>
   );
 }
+

@@ -14,7 +14,7 @@ type LoginModalProps = {
   toggleModals: () => void;
 };
 
-async function LoginModal({
+function LoginModal({
   isOpen,
   toggleLoginModal,
   toggleModals,

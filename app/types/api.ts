@@ -1,9 +1,13 @@
+import { JwtPayload } from "jwt-decode";
+
 export type TCategory = {
   id: string;
   title: string;
   image: string;
   items?: string[];
 };
+
+export type TUserRole = "admin" | "customer" | "guest";
 
 export type TUser = {
   id: string;
@@ -42,3 +46,7 @@ export type TUser = {
   created_at: string;
   updated_at: string;
 };
+
+export type TTokenDecoded = JwtPayload & {
+  user_role: TUserRole;
+}

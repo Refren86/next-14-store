@@ -3,11 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Suspense } from "react";
+import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
+import { Session } from "@supabase/supabase-js";
 import { ShoppingCart, User, X } from "lucide-react";
 
 import Wrapper from "./Wrapper";
-import NavbarModals from "@/app/components/NavbarModals";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -18,8 +19,9 @@ import {
 } from "@/app/components/ui/DropdownMenu";
 import { Button } from "@/app/components/ui/Button";
 import { Logo } from "@/app/components/icons/Logo";
+import NavbarModals from "@/app/components/NavbarModals";
 import { createClient } from "../lib/supabase/client";
-import { useUserStore } from "../hooks/store/useUserStore";
+import { TTokenDecoded, TUserRole } from "../types/api";
 
 const cartItems = [
   {
@@ -31,9 +33,14 @@ const cartItems = [
   },
 ];
 
-function Navbar() {
+type TNavbarProps = {
+  session: Session | null;
+};
+
+function Navbar({ session }: TNavbarProps) {
   const router = useRouter();
-  const userData = useUserStore((state: any) => state);
+
+  const user = session?.user;
 
   async function logout() {
     try {
@@ -45,18 +52,24 @@ function Navbar() {
     }
   }
 
+  const userRole: TUserRole = session?.access_token
+    ? (jwtDecode(session?.access_token) as TTokenDecoded).user_role
+    : "guest";
+
   return (
     <div>
-      <div className="bg-primary flex justify-center items-center">
-        <Wrapper>
-          <p className="font-semibold text-sm md:text-lg text-center text-white py-2 selection:bg-black">
-            Зареєструйтесь та отримайте <b>знижку 20%</b> на перше замовлення.{" "}
-            <Link href="?sign-up=true" className="underline">
-              <b>Зареєструватись</b>
-            </Link>
-          </p>
-        </Wrapper>
-      </div>
+      {!user && (
+        <div className="bg-primary flex justify-center items-center">
+          <Wrapper>
+            <p className="font-semibold text-sm md:text-lg text-center text-white py-2 selection:bg-black">
+              Зареєструйтесь та отримайте <b>знижку 20%</b> на перше замовлення.{" "}
+              <Link href="?sign-up=true" className="underline">
+                <b>Зареєструватись</b>
+              </Link>
+            </p>
+          </Wrapper>
+        </div>
+      )}
 
       <nav className="bg-secondary py-4">
         <Wrapper>
@@ -120,16 +133,19 @@ function Navbar() {
               </div>
 
               <div className="group flex justify-center items-center min-w-[48px] h-12 hover:bg-primary/70 hover:text-white rounded-full cursor-pointer transition-background duration-300">
-                {userData.user ? (
+                {user ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger className="w-full h-full font-semibold">
-                      {userData.user.user_metadata.first_name.charAt(0)}.{" "}
-                      {userData.user.user_metadata.last_name.charAt(0)}.
+                      {user.user_metadata.first_name.charAt(0)}.{" "}
+                      {user.user_metadata.last_name.charAt(0)}.
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent>
                       <DropdownMenuLabel>Мій профіль</DropdownMenuLabel>
                       <DropdownMenuSeparator />
+                      {userRole === "admin" && (
+                        <DropdownMenuItem>Панель управління</DropdownMenuItem>
+                      )}
                       <DropdownMenuItem>Налаштування</DropdownMenuItem>
                       <DropdownMenuItem>Мої покупки</DropdownMenuItem>
                       <DropdownMenuItem>

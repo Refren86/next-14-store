@@ -4,18 +4,32 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createSupabaseAppClient } from "./supabase/server";
+import { LoginSchema, TLoginFormState } from "../types/forms";
 
-export async function login(formData: FormData) {
+export async function loginAction(
+  prevState: TLoginFormState,
+  formData: FormData
+): Promise<TLoginFormState> {
   const supabase = createSupabaseAppClient();
 
-  // type-casting here for convenience
-  // in practice, I should validate my inputs with zod
-  const data = {
-    email: formData.get("email") as string,
-    password: formData.get("password") as string,
+  const rawFormData = {
+    email: formData.get("email"),
+    password: formData.get("password"),
   };
-  
-  const { error } = await supabase.auth.signInWithPassword(data);
+
+  const validateFields = LoginSchema.safeParse(rawFormData);
+
+  if (!validateFields.success) {
+    return {
+      errors: validateFields.error.flatten().fieldErrors,
+      message: "Поля невалідні. Спробуйте ще раз",
+      fieldValues: {
+        ...prevState.fieldValues,
+      },
+    };
+  }
+
+  const { error } = await supabase.auth.signInWithPassword(validateFields.data);
 
   if (error) {
     redirect("/error");

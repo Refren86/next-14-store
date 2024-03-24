@@ -2,14 +2,21 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { SignUpWithPasswordCredentials } from "@supabase/supabase-js";
 
 import { createSupabaseAppClient } from "./supabase/server";
-import { LoginSchema, TLoginFormState } from "../types/forms";
+import {
+  LoginSchema,
+  SignUpSchema,
+  TFormState,
+  TLoginFields,
+  TSignUpFields,
+} from "../types/forms";
 
 export async function loginAction(
-  prevState: TLoginFormState,
+  prevState: TFormState<TLoginFields>,
   formData: FormData
-): Promise<TLoginFormState> {
+): Promise<TFormState<TLoginFields>> {
   const supabase = createSupabaseAppClient();
 
   const rawFormData = {
@@ -21,11 +28,10 @@ export async function loginAction(
 
   if (!validateFields.success) {
     return {
+      success: false,
       errors: validateFields.error.flatten().fieldErrors,
       message: "Поля невалідні. Спробуйте ще раз",
-      fieldValues: {
-        ...prevState.fieldValues,
-      },
+      fieldValues: prevState.fieldValues,
     };
   }
 
@@ -33,34 +39,69 @@ export async function loginAction(
 
   if (error) {
     redirect("/error");
-  }
+  } else {
+    revalidatePath("/", "layout");
 
-  revalidatePath("/", "layout");
-  redirect("/"); // show modal after or smth
+    return {
+      success: true,
+      errors: undefined,
+      message: "Успішно.",
+      fieldValues: prevState.fieldValues,
+    };
+  }
 }
 
-export async function signup(formData: FormData) {
+export async function signUpAction(
+  prevState: TFormState<TSignUpFields>,
+  formData: FormData
+): Promise<TFormState<TSignUpFields>> {
   const supabase = createSupabaseAppClient();
 
-  // type-casting here for convenience
-  // in practice, I should validate my inputs with zod
-  const data = {
-    email: formData.get("email") as string,
-    password: formData.get("password") as string,
+  const rawFormData = {
+    name: formData.get("name"),
+    surname: formData.get("surname"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+  };
+
+  const validateFields = SignUpSchema.safeParse(rawFormData);
+
+  if (!validateFields.success) {
+    return {
+      success: false,
+      errors: validateFields.error.flatten().fieldErrors,
+      message: "Поля невалідні. Спробуйте ще раз",
+      fieldValues: prevState.fieldValues,
+    };
+  }
+
+  const {
+    data: { email, password, name, surname },
+  } = validateFields;
+
+  const reqBody: SignUpWithPasswordCredentials = {
+    email,
+    password,
     options: {
       data: {
-        first_name: formData.get("name") as string,
-        last_name: formData.get("surname") as string,
+        first_name: name,
+        last_name: surname,
       },
     },
   };
 
-  const { error } = await supabase.auth.signUp(data);
+  const { error } = await supabase.auth.signUp(reqBody);
 
   if (error) {
     redirect("/error");
+  } else {
+    revalidatePath("/", "layout");
+    return {
+      success: true,
+      errors: undefined,
+      message:
+        "Е-мейл з підтвердженям аккаунту був відправлений на вказану пошту 💌",
+      fieldValues: prevState.fieldValues,
+    };
   }
-
-  revalidatePath("/", "layout");
-  redirect("/");
 }
